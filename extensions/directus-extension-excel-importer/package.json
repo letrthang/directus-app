@@ -1,0 +1,42 @@
+{
+  "name": "directus-extension-excel-importer",
+  "version": "1.0.0",
+  "keywords": ["directus", "directus-extension", "directus-custom-bundle"],
+  "directus:extension": {
+    "type": "bundle",
+    "path": {
+      "app": "dist/app.js",
+      "api": "dist/api.js"
+    },
+    "entries": [
+      {
+        "type": "module",
+        "name": "excel-importer-module",
+        "source": "entries/excel-importer-module/index.ts"
+      },
+      {
+        "type": "endpoint",
+        "name": "excel-importer-endpoint",
+        "source": "entries/excel-importer-endpoint/index.ts"
+      }
+    ],
+    "host": "^11.0.0",
+    "typeModule": true
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify"
+  },
+  "dependencies": {
+    "@directus/extensions-sdk": "^11.0.5",
+    "@directus/errors": "^2.0.3",
+    "xlsx": "^0.18.5",
+    "vue": "^3.4.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4",
+    "@types/node": "^20.12.7",
+    "@types/multer": "^1.4.11"
+  }
+}
