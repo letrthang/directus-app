@@ -5,13 +5,20 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
-npm run dev
+
+ npm run dev
+ 
 # or
-yarn dev
+
+ yarn dev
+ 
 # or
-pnpm dev
+
+ pnpm dev
+ 
 # or
-bun dev
+
+ bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -29,8 +36,17 @@ To learn more about Next.js, take a look at the following resources:
 
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Architecture and Deployment
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Architecture - https://directus.io vs Next.js
+![Alt text](./doc/architecture.png)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+### Deployment 
+
+- You should set up Directus on docker and copy file */database/data.db* to replace your data.db file and run Next.js app with ` npm run dev`
+
+You could see the home page as below:
+
+
+![Alt text](./doc/demo.png)
