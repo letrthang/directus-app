@@ -36,7 +36,7 @@ This project uses [`next/font`](https://nextjs.org/docs/app/building-your-applic
 
 ### Deployment 
 
-- You should set up Directus on docker and copy file */database/data.db* to replace your data.db file and run Next.js app with ` npm run dev`
+- You should set up Directus on docker (docker-compose.yml) and copy file */database/data.db* to replace your data.db file and run Next.js app with ` npm run dev`
 
 You could see the home page as below:
 
