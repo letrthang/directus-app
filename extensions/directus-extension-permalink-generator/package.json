@@ -1,0 +1,26 @@
+{
+  "name": "directus-extension-permalink-generator",
+  "version": "1.0.0",
+  "keywords": [
+    "directus",
+    "directus-extension",
+    "directus-extension-interface"
+  ],
+  "type": "module",
+  "directus:extension": {
+    "type": "interface",
+    "path": "dist/index.js",
+    "source": "src/index.ts",
+    "host": "^11.0.0"
+  },
+  "scripts": {
+    "build": "directus-extension build",
+    "dev": "directus-extension build -w --no-minify"
+  },
+  "devDependencies": {
+    "@directus/extensions-sdk": "11.0.0",
+    "@directus/types": "^11.2.1",
+    "typescript": "^5.9.3",
+    "vue": "^3.5.22"
+  }
+}
