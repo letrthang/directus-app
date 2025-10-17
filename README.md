@@ -10,15 +10,7 @@ First, run the development server:
  
 # or
 
- yarn dev
- 
-# or
-
  pnpm dev
- 
-# or
-
- bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -42,6 +34,69 @@ You could see the home page as below:
 
 
 ![Alt text](./doc/demo.png)
+
+## Memory Profiling
+
+### **Step 1: Start app**
+- Run web app in local machine with command: ` $env:NODE_OPTIONS="--inspect=0"; npm run dev` OR with prod: `$env:NODE_OPTIONS="--inspect=0"; npm start`
+
+![Alt text](./doc/profiling_1.png)
+
+
+### **Step 2: Open Inspect tool**
+1. Open **Chrome** browser (or Edge)
+2. In the address bar, type: `chrome://inspect`
+3. Press Enter
+
+You should see a page titled **"Devices"**
+
+![Alt text](./doc/profiling_2.png)
+
+
+### **Step 3: Configure the Port (if needed)**
+
+1. Click the **"Configure..."** button (near the top)
+2. Make sure inspection listener port are in the list:
+```
+   localhost:9229
+   localhost:9230
+```
+3. If the port is missing, add it
+4. Click **"Done"**
+
+![Alt text](./doc/profiling_3.png)
+
+Under **"Remote Target"** section, you should see:
+```
+Remote Target #LOCALHOST
+  Target (v20.14.0)
+  file:///.../directus-app/node_modules/next/dist/bin/next
+  inspect
+```
+Click the **"inspect"** link under your Next.js process.
+
+## 📊 **Step 4: Take Allocation Profile**
+
+A new DevTools window will open. Now:
+
+### **Allocation Instrumentation Timeline (Best for Finding Leaks)**
+
+1. Click the **"Memory"** tab (at the top)
+2. Select the radio button: **"Allocation instrumentation on timeline"**
+3. Click the blue **"Start"** button at the bottom
+
+Now the profiler is recording!
+
+![Alt text](./doc/profiling_4.png)
+
+4. **Use your app** - Open another browser tab and move around the page:
+`http://localhost:3000`
+
+## 📊 **Step 5: Stop recording and Review results**
+
+Wait for profiling completed and view report
+
+![Alt text](./doc/profiling_5.png)
 
 
 ## Learn More
