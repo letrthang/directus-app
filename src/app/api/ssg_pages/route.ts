@@ -5,7 +5,8 @@ const DIRECTUS_TOKEN = process.env.DIRECTUS_TOKEN;
 
 export async function GET() {
     try {
-        const response = await fetch(`${DIRECTUS_URL}/items/ssg_page`, {
+        const url = `${DIRECTUS_URL}/items/pages`;
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${DIRECTUS_TOKEN}`,
                 'Content-Type': 'application/json',
@@ -13,6 +14,7 @@ export async function GET() {
         });
 
         if (!response.ok) {
+            console.error(`API request failed: ${url} - Status: ${response.status}`);
             throw new Error(`Directus API error: ${response.status}`);
         }
 

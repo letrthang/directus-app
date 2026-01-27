@@ -19,44 +19,61 @@ interface SSGSection {
 
 // Static Site Generation - runs at build time
 export async function generateStaticParams() {
-    const response = await fetch(`${process.env.DIRECTUS_URL}/items/ssg_page`, {
-        headers: {
-            'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}`,
-        },
-    });
-    const data = await response.json();
+    try {
+        const response = await fetch(`${process.env.DIRECTUS_URL}/items/pages`, {
+            headers: {
+                'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}`,
+            },
+        });
+        const data = await response.json();
 
-    return data.data.map((page: SSGPage) => ({
-        id: page.id.toString(),
-    }));
+        if (!data.data) return [];
+
+        return data.data.map((page: SSGPage) => ({
+            id: page.id.toString(),
+        }));
+    } catch (error) {
+        console.error('Error generating static params:', error);
+        return [];
+    }
 }
 
 async function getSSGPageData(id: string) {
-    const [pageResponse, sectionsResponse] = await Promise.all([
-        fetch(`${process.env.DIRECTUS_URL}/items/ssg_page/${id}`, {
-            headers: { 'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}` },
-        }),
-        fetch(`${process.env.DIRECTUS_URL}/items/ssg_section?filter[page_id][_eq]=${id}`, {
-            headers: { 'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}` },
-        }),
-    ]);
+    try {
+        const [pageResponse, blocksResponse] = await Promise.all([
+            fetch(`${process.env.DIRECTUS_URL}/items/pages/${id}`, {
+                headers: { 'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}` },
+            }),
+            fetch(`${process.env.DIRECTUS_URL}/items/page_blocks?filter[page][_eq]=${id}`, {
+                headers: { 'Authorization': `Bearer ${process.env.DIRECTUS_TOKEN}` },
+            }),
+        ]);
 
-    const page = await pageResponse.json();
-    const sections = await sectionsResponse.json();
+        if (!pageResponse.ok) return null;
 
-    return {
-        page: page.data,
-        sections: sections.data,
-    };
+        const page = await pageResponse.json();
+        const blocks = await blocksResponse.json();
+
+        return {
+            page: page.data,
+            blocks: blocks.data || [],
+        };
+    } catch (error) {
+        console.error('Error fetching SSG data:', error);
+        return null;
+    }
 }
 
 export default async function SSGPageDetail({ params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
-    const { page, sections } = await getSSGPageData(id);
+    const data = await getSSGPageData(id);
 
-    if (!page) {
+    if (!data || !data.page) {
         return <div className="ssg-error">SSG Page not found</div>;
     }
+
+    const { page, blocks } = data;
+    const buildTime = new Date().toLocaleString();
 
     return (
         <div className="ssg-container">
@@ -70,44 +87,51 @@ export default async function SSGPageDetail({ params }: { params: Promise<{ id: 
                     <div className="ssg-page-meta">
                         <span className="ssg-status">Type: Static Site Generation</span>
                         <span className="ssg-date">
-              Created: {new Date(page.date_created).toLocaleDateString()}
-            </span>
+                            Status: {page.status}
+                        </span>
+                        <span className="ssg-date">
+                            Created: {new Date(page.date_created).toLocaleDateString()}
+                        </span>
                         {page.date_updated && (
                             <span className="ssg-date">
-                Updated: {new Date(page.date_updated).toLocaleDateString()}
-              </span>
+                                Updated: {new Date(page.date_updated).toLocaleDateString()}
+                            </span>
                         )}
+                        <span className="ssg-date">
+                            Built at: {buildTime}
+                        </span>
                     </div>
                 </header>
 
                 <section className="ssg-sections">
-                    <h2>SSG Sections ({sections.length})</h2>
+                    <h2>Page Blocks ({blocks.length})</h2>
 
                     <div className="ssg-sections-list">
-                        {sections.map((section: SSGSection) => (
-                            <div key={section.id} className="ssg-section-card">
-                                <h3>Section #{section.id}</h3>
+                        {blocks.map((block: any) => (
+                            <div key={block.id} className="ssg-section-card">
+                                <h3>Block #{block.sort}</h3>
 
                                 <div className="ssg-section-radio">
-                                    <h4>Radio Button Selection:</h4>
+                                    <h4>Block Details:</h4>
                                     <div className="ssg-radio-display">
-                    <span className="ssg-radio-tag">
-                      {section.radio_button}
-                    </span>
+                                        <p><strong>Collection:</strong> {block.collection}</p>
+                                        <p><strong>Background:</strong> {block.background}</p>
+                                        <p><strong>Hidden:</strong> {block.hide_block ? 'Yes' : 'No'}</p>
                                     </div>
-                                </div>
-
-                                <div className="ssg-section-meta">
-                                    <small>
-                                        Created: {new Date(section.date_created).toLocaleDateString()}
-                                        {section.date_updated && (
-                                            <> • Updated: {new Date(section.date_updated).toLocaleDateString()}</>
-                                        )}
-                                    </small>
                                 </div>
                             </div>
                         ))}
                     </div>
+                </section>
+
+                <section className="ssg-info">
+                    <h3>About SSG (Static Site Generation)</h3>
+                    <ul>
+                        <li>✅ Pre-rendered at build time</li>
+                        <li>✅ Served as static HTML (fastest)</li>
+                        <li>❌ Content never updates until rebuild</li>
+                        <li>✅ Perfect for content that rarely changes</li>
+                    </ul>
                 </section>
             </article>
         </div>

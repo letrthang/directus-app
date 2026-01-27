@@ -9,29 +9,10 @@ interface Page {
     status: string;
     date_created: string;
     date_updated?: string;
-    sections: number[];
-}
-
-interface SSGPage {
-    id: number;
-    title: string;
-    date_created: string;
-    date_updated?: string;
-    ssg_sections: number[];
-}
-
-interface SSRPage {
-    id: number;
-    title: string;
-    date_created: string;
-    date_updated?: string;
-    ssr_sections: number[];
 }
 
 export default function Home() {
     const [pages, setPages] = useState<Page[]>([]);
-    const [ssgPages, setSSGPages] = useState<SSGPage[]>([]);
-    const [ssrPages, setSSRPages] = useState<SSRPage[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
@@ -43,26 +24,15 @@ export default function Home() {
         try {
             setLoading(true);
 
-            // Fetch all page types
-            const [pagesResponse, ssgResponse, ssrResponse] = await Promise.all([
-                fetch('/api/pages'),
-                fetch('/api/ssg_pages'),
-                fetch('/api/ssr_pages')
-            ]);
+            // All page types use the same data source
+            const response = await fetch('/api/pages');
 
-            if (!pagesResponse.ok || !ssgResponse.ok || !ssrResponse.ok) {
+            if (!response.ok) {
                 throw new Error('Failed to fetch pages');
             }
 
-            const [pagesData, ssgData, ssrData] = await Promise.all([
-                pagesResponse.json(),
-                ssgResponse.json(),
-                ssrResponse.json()
-            ]);
-
+            const pagesData = await response.json();
             setPages(pagesData);
-            setSSGPages(ssgData);
-            setSSRPages(ssrData);
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
@@ -77,7 +47,7 @@ export default function Home() {
         <div className="container">
             <h1>All Pages</h1>
 
-            {/* Original CSR Pages */}
+            {/* CSR Pages */}
             <section className="page-section">
                 <h2>CSR Pages (Client-Side Rendering)</h2>
                 <div className="pages-grid">
@@ -90,9 +60,6 @@ export default function Home() {
                             </h3>
                             <p className="page-type">Type: CSR</p>
                             <p className="status">Status: {page.status}</p>
-                            <p className="sections-count">
-                                Total Sections: {page.sections ? page.sections.length : 0}
-                            </p>
                             <p className="date">
                                 Created: {new Date(page.date_created).toLocaleDateString()}
                             </p>
@@ -105,7 +72,7 @@ export default function Home() {
             <section className="page-section">
                 <h2>SSG Pages (Static Site Generation)</h2>
                 <div className="pages-grid">
-                    {ssgPages.map((page) => (
+                    {pages.map((page) => (
                         <div key={page.id} className="page-card ssg-card">
                             <h3>
                                 <Link href={`/ssg_page/${page.id}`}>
@@ -113,9 +80,6 @@ export default function Home() {
                                 </Link>
                             </h3>
                             <p className="page-type">Type: SSG</p>
-                            <p className="sections-count">
-                                Total Sections: {page.ssg_sections ? page.ssg_sections.length : 0}
-                            </p>
                             <p className="date">
                                 Created: {new Date(page.date_created).toLocaleDateString()}
                             </p>
@@ -128,7 +92,7 @@ export default function Home() {
             <section className="page-section">
                 <h2>SSR Pages (Server-Side Rendering)</h2>
                 <div className="pages-grid">
-                    {ssrPages.map((page) => (
+                    {pages.map((page) => (
                         <div key={page.id} className="page-card ssr-card">
                             <h3>
                                 <Link href={`/ssr_page/${page.id}`}>
@@ -136,9 +100,26 @@ export default function Home() {
                                 </Link>
                             </h3>
                             <p className="page-type">Type: SSR</p>
-                            <p className="sections-count">
-                                Total Sections: {page.ssr_sections ? page.ssr_sections.length : 0}
+                            <p className="date">
+                                Created: {new Date(page.date_created).toLocaleDateString()}
                             </p>
+                        </div>
+                    ))}
+                </div>
+            </section>
+
+            {/* ISR Pages */}
+            <section className="page-section">
+                <h2>ISR Pages (Incremental Static Regeneration)</h2>
+                <div className="pages-grid">
+                    {pages.map((page) => (
+                        <div key={page.id} className="page-card isr-card">
+                            <h3>
+                                <Link href={`/isr_page/${page.id}`}>
+                                    {page.title}
+                                </Link>
+                            </h3>
+                            <p className="page-type">Type: ISR</p>
                             <p className="date">
                                 Created: {new Date(page.date_created).toLocaleDateString()}
                             </p>
@@ -204,6 +185,11 @@ export default function Home() {
                     border: 1px solid #f59e0b;
                 }
 
+                .isr-card {
+                    background: #faf5ff;
+                    border: 1px solid #a855f7;
+                }
+
                 .page-card h3 {
                     margin: 0 0 1rem 0;
                     font-size: 1.1rem;
@@ -212,6 +198,7 @@ export default function Home() {
                 .csr-card h3 a { color: #2563eb; }
                 .ssg-card h3 a { color: #059669; }
                 .ssr-card h3 a { color: #d97706; }
+                .isr-card h3 a { color: #9333ea; }
 
                 .page-card h3 a {
                     text-decoration: none;
@@ -244,6 +231,31 @@ export default function Home() {
                     color: white;
                 }
 
+                .isr-card .page-type {
+                    background: #a855f7;
+                    color: white;
+                }
+
+                .isr-card .page-type {
+                    background: #a855f7;
+                    color: white;
+                }
+
+                .isr-card .page-type {
+                    background: #a855f7;
+                    color: white;
+                }
+
+                .isr-card .page-type {
+                    background: #a855f7;
+                    color: white;
+                }
+
+                .isr-card .page-type {
+                    background: #a855f7;
+                    color: white;
+                }
+
                 .status, .sections-count, .date {
                     color: #666;
                     font-size: 0.9rem;
@@ -257,6 +269,7 @@ export default function Home() {
                 .csr-card .sections-count { color: #2563eb; }
                 .ssg-card .sections-count { color: #059669; }
                 .ssr-card .sections-count { color: #d97706; }
+                .isr-card .sections-count { color: #9333ea; }
 
                 .loading, .error {
                     text-align: center;

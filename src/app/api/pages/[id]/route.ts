@@ -9,7 +9,8 @@ export async function GET(
 ) {
     try {
         const { id } = await  params;
-        const response = await fetch(`${DIRECTUS_URL}/items/page/${id}`, {
+        const url = `${DIRECTUS_URL}/items/pages/${id}`;
+        const response = await fetch(url, {
             headers: {
                 'Authorization': `Bearer ${DIRECTUS_TOKEN}`,
                 'Content-Type': 'application/json',
@@ -17,6 +18,7 @@ export async function GET(
         });
 
         if (!response.ok) {
+            console.error(`API request failed: ${url} - Status: ${response.status}`);
             throw new Error(`Directus API error: ${response.status}`);
         }
 

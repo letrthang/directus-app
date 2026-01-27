@@ -8,11 +8,11 @@ export async function GET(request: NextRequest) {
         const { searchParams } = new URL(request.url);
         const pageId = searchParams.get('page_id');
 
-        let url = `${DIRECTUS_URL}/items/section`;
+        let url = `${DIRECTUS_URL}/items/page_blocks`;
 
         // Filter by page_id if provided
         if (pageId) {
-            url += `?filter[page_id][_eq]=${pageId}`;
+            url += `?filter[page][_eq]=${pageId}`;
         }
 
         console.log('Fetching sections from URL:', url); // Debug log
