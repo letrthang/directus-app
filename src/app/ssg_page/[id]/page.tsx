@@ -39,6 +39,11 @@ export async function generateStaticParams() {
     }
 }
 
+// Generate random number with 5 digits
+function generateRandomNumber(): string {
+    return Math.floor(10000 + Math.random() * 90000).toString();
+}
+
 async function getSSGPageData(id: string) {
     try {
         const [pageResponse, blocksResponse] = await Promise.all([
@@ -75,6 +80,7 @@ export default async function SSGPageDetail({ params }: { params: Promise<{ id: 
 
     const { page, blocks } = data;
     const buildTime = new Date().toLocaleString();
+    const randomNumber = generateRandomNumber();
 
     return (
         <div className="ssg-container">
@@ -85,7 +91,7 @@ export default async function SSGPageDetail({ params }: { params: Promise<{ id: 
             <article className="ssg-page-content">
                 <header>
                     <h1>{page.title} (SSG)</h1>
-                    <TitleDialog title={page.title} />
+                    <TitleDialog title={page.title} randomNumber={randomNumber} />
                     <div className="ssg-page-meta">
                         <span className="ssg-status">Type: Static Site Generation</span>
                         <span className="ssg-date">
