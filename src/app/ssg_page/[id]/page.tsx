@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import './ssg_page.css';
+import TitleDialog from './TitleDialog';
 
 interface SSGPage {
     id: number;
@@ -84,6 +85,7 @@ export default async function SSGPageDetail({ params }: { params: Promise<{ id: 
             <article className="ssg-page-content">
                 <header>
                     <h1>{page.title} (SSG)</h1>
+                    <TitleDialog title={page.title} />
                     <div className="ssg-page-meta">
                         <span className="ssg-status">Type: Static Site Generation</span>
                         <span className="ssg-date">
